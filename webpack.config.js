@@ -1,8 +1,9 @@
 var path = require('path')
 var webpack = require('webpack')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
+const merge = require('webpack-merge');
 
-module.exports = {
+var commonConfig = {
   entry: './src/main.js',
   output: {
     path: path.resolve(__dirname, './dist'),
@@ -98,3 +99,29 @@ if (process.env.NODE_ENV === 'production') {
     })
   ])
 }
+
+module.exports = [
+
+  // Config 1: For browser environment
+  merge(commonConfig, {
+    entry: path.resolve(__dirname + '/src/plugin.js'),
+    output: {
+      filename: 'vue-bulma-typeahead.min.js',
+      libraryTarget: 'window',
+      library: 'VueTypeahead'
+    }
+  }),
+
+  // Config 2: For Node-based development environments
+  merge(commonConfig, {
+    entry: path.resolve(__dirname + '/src/Typeahead.vue'),
+    output: {
+      filename: 'vue-bulma-typeahead.js',
+      libraryTarget: 'umd',
+
+      // These options are useful if the user wants to load the module with AMD
+      library: 'vue-bulma-typeahead',
+      umdNamedDefine: true
+    }
+  })
+];
